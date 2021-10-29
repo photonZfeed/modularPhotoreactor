@@ -2,7 +2,7 @@
 
 A modular and characterized open source photoreactor
 
-## Documentaition
+## Documentation
 
 The assembly of the device is documented in the [CAD section](./01_CAD/).
 
@@ -15,7 +15,9 @@ The Python modules are documented in the [Software section](./00_SOFTWARE/). See
 
 Cite this repository: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4898138.svg)](https://doi.org/10.5281/zenodo.4898138)
 
-Links to the pulblicatons will be added when available.
+A preprint of the corresponding pulblicaton is available at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5614884.svg)](https://doi.org/10.5281/zenodo.5614884)
+
+Characterization data for the modular photoreactor are available at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5614942.svg)](https://doi.org/10.5281/zenodo.5614942)
 
 ## Licensing
 
