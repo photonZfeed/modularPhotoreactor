@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	New Energy 
+Herstellerreferenz/Manufacturer reference:	 	LST1-01G01-UV01-00
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/New-Energy/LST1-01G01-UV01-00?qs=%2Fha2pyFadugRsO%252BjSI1fjVy9zYsv%2FrUsathavTJrJXFctskT11QdKQ%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/810/NewEnergy_StarBoard_Horticulture_Luminus_DataSheet-2509530.pdf
+link data sheet:https://www.mouser.de/datasheet/2/245/Luminus_SST_10_UV_Datasheet-1499199.pdf

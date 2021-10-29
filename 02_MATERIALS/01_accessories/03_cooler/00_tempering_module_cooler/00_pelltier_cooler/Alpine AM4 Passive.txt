@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	arctc
+Herstellerreferenz/Manufacturer reference:	 	Alpine AM4 Passive
+size: 95x95x69mm
+Verkäufer/Supplier: arctic
+link: https://www.arctic.de/alpine-am4passive
+link data sheet: https://www.arctic.de/media/9b/f4/1b/1584096716/spec_sheet_Alpine_AM4_Passive_180321_r1_DE.pdf

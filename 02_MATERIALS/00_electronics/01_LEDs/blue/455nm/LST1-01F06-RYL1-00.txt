@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	New Energy
+Herstellerreferenz/Manufacturer reference:	 	LST1-01F06-RYL1-00 
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/New-Energy/LST1-01F06-RYL1-00?qs=%2Fha2pyFaduilZtmip5qW9z7HUCv8nMaA0eMexZ6kZirrIeM7%252BIrpZw%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/810/NewEnergy_StarBoard_Horticulture_Osram_DataSheet-2326228.pdf

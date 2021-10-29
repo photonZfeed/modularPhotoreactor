@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	RASPBERRY PI 
+EAN / GTIN: 0765756931199
+Herstellerreferenz/Manufacturer reference:	 	PI4 MODEL B/8GB
+Verkäufer/Supplier: Reichelt Electronics
+link: https://www.reichelt.com/raspberry-pi-4-b-4x-1-5-ghz-8-gb-ram-wlan-bt-rasp-pi-4-b-8gb-p276923.html?CCOUNTRY=445&LANGUAGE=de&utm_source=display&utm_medium=rsp-foundation&src=raspberrypi&&r=1
+link data sheet: https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf

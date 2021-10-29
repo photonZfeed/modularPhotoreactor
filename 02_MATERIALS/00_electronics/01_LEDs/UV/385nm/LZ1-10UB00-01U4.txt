@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	LED Engin 
+Herstellerreferenz/Manufacturer reference:	 	LZ1-10UB00-01U4 
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/LED-Engin/LZ1-10UB00-01U4?qs=MLItCLRbWsx2FP%252BXUwwETQ%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/311/LED_2520Engin_Datasheet_LuxiGen_LZ1_00UB00_rev2_1_-2298110.pdf

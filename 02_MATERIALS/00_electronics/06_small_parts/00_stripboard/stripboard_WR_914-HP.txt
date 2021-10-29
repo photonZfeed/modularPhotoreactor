@@ -1,0 +1,7 @@
+Hersteller/Manufacturer: 	Rademacher
+EAN / GTIN: 4031909007650
+Herstellerreferenz/Manufacturer reference:	 	914-HP
+Verkäufer/Supplier: Conrad Electronics
+size:160 mm x 100 mm 35 µm Rastermaß 2.54 mm
+link: https://www.conrad.de/de/p/rademacher-wr-typ-914-pruefungsplatine-nach-ihk-richtlinie-hartpapier-l-x-b-160-mm-x-100-mm-35-m-rastermass-2-54-mm-inh-529530.html?gclid=CjwKCAjwzt6LBhBeEiwAbPGOgSD-JTgZFimxhaYaZ-8VILpRs2BkVctlSZxG1TCE37W8l68BeSxjRhoCVZEQAvD_BwE&hk=SEM&WT.srch=1&WT.mc_id=google_pla&s_kwcid=AL%21222%213%21547793176739%21%21%21u%21%21&ef_id=CjwKCAjwzt6LBhBeEiwAbPGOgSD-JTgZFimxhaYaZ-8VILpRs2BkVctlSZxG1TCE37W8l68BeSxjRhoCVZEQAvD_BwE%3AG%3As#productTechData
+link datasheet: https://asset.conrad.com/media10/add/160267/c1/-/de/000529530DS01/datenblatt-529530-rademacher-wr-typ-914-pruefungsplatine-nach-ihk-richtlinie-hartpapier-l-x-b-160-mm-x-100-mm-35-m-rastermass-254-mm-inh.pdf

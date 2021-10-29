@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	RASPBERRY PI 
+EAN / GTIN: 9900002552549 
+Herstellerreferenz/Manufacturer reference:	 	‎NOOBS 32GB 3.7.0   
+Verkäufer/Supplier: Reichelt Electronics
+link: https://www.reichelt.de/de/de/raspberry-pi-os-3-7-32gb-microsd-karte-vorinstalliert-rasp-os-32gb-p255254.html?PROVID=2788&gclid=CjwKCAjwn8SLBhAyEiwAHNTJbUmlY2tGaDD32iti4Rj_rPYJ5GRrZUsn9ZRNMn5Guj-5YmjyoY5ixxoCLDAQAvD_BwE&&r=1

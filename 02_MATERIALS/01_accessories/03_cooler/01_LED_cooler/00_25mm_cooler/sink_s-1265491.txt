@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	Ohmite 
+Herstellerreferenz/Manufacturer reference:	 	SV-LED-125E 
+size: 25mm
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/Ohmite/SV-LED-125E?qs=%2Fha2pyFaduh7r5e0grrifGI%2F%252BUwmm%2F4AaqeIxgO99E4%3D
+link data sheet: https://www.mouser.de/datasheet/2/303/sink_s-1265491.pdf

@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	LED Engin 
+Herstellerreferenz/Manufacturer reference:	 	LZ4-00B208-0000 
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/LED-Engin/LZ4-00B208-0000?qs=CiayqK2gdcKbkuddvFqiuQ%3D%3D
+link data sheet: file:///C:/Users/Daniel/AppData/Local/Temp/LZ4-00B208_EN.pdf

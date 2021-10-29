@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	LED Engin 
+Herstellerreferenz/Manufacturer reference:	 	LZ4-20MA00-0000
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/LED-Engin/LZ4-20MA00-0000?qs=OvPPqLVMG0SblwqZ%252BkWTfQ%3D%3D
+link data sheet: http://www.ledengin.com/files/products/LZ4/LZ4-00MA00.pdf

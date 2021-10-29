@@ -1,0 +1,7 @@
+Hersteller/Manufacturer: 	‎KIMILAR
+ASIN: 	B00ITMJPCU  
+Herstellerreferenz/Manufacturer reference:	 	0qKyMGQRP  
+Größe/size: 	 	‎11.99 x 11.99 x 2.49 cm; 260 Grams 
+Verkäufer/Supplier: Amazon
+link: https://www.amazon.de/-/en/Peltier-Element-TEC1-12706-Thermo-Electric/dp/B00ITMJPCU/ref=sr_1_3?dchild=1&keywords=TEC1-12706&qid=1634821386&qsid=257-2331300-1205907&sr=8-3&sres=B00ITMJPCU%2CB07DN7T3Y8%2CB086TZ7W2R%2CB07QGP1QP8%2CB078GSC2L1%2CB01FLVT2EC%2CB08PP2212C%2CB07WJKKKQ8%2CB08GM1YTQW%2CB07MQBGG8R%2CB079DLZ6GX%2CB07H7H3JB7%2CB00DFQRJ00%2CB01EIY6N7C%2CB08J797BCQ%2CB075HGTT98
+link data sheet: https://asset.re-in.de/add/160267/c1/-/en/000189115DS02/DA_TRU-Components-TEC1-12706-Peltier-Element-15V-6.4A-65W-L-x-B-x-H-40-x-40-x-3.8mm.pdf

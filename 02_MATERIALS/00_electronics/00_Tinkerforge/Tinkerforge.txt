@@ -1,0 +1,24 @@
+Controller:
+1 x HAT Brick
+2 x IO-4 2.0
+1 x LCD 128x64
+2 x Thermocouple 2.0
+
+Master Extension Module:
+1 x Master Brick
+
+Membrane Pump Module:
+1 x Industrial Analog Out 2.0
+
+Pressure Sensor Module:
+1 x Industrial Analog Out 2.0
+1 x Industrial Dual Analog In 2.0 (modified)
+
+Ambient Temperature Module:
+1 x Temperature 2.0
+
+Tempering Module:
+2 x Industrial Dual Relay
+
+Supplier: Tinkerforge
+Link: https://www.tinkerforge.com/de/doc/

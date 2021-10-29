@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	LED Engin 
+Herstellerreferenz/Manufacturer reference:	 	LZ4-V0UB0R-00U8
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/LED-Engin/LZ4-V0UB0R-00U8?qs=%2Fha2pyFaduigLBoKwNqTETJ%252Bni6ZM5EQk8uq3h%252Byd2yH9g%252BjAUEjJg%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/228/LED_Engin_Datasheet_LuxiGen_LZ4_00UB0R_rev1_1_2020-1915155.pdf

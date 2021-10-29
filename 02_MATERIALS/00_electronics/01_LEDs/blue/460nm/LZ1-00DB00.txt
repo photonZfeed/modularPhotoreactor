@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	LED Engin 
+Herstellerreferenz/Manufacturer reference:	 	LZ1-00DB00-0100 
+Verkäufer/Supplier: Mouser Electronics
+link: https:https://www.mouser.de/ProductDetail/LED-Engin/LZ1-00DB00-0100?qs=MLItCLRbWsxL%252B4hvGChTJA%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/228/5412869-LED_2520Engin_Datasheet_LuxiGen_LZ1-00DB00-1532005.pdf

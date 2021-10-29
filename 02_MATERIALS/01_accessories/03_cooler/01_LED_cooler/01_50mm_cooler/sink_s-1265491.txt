@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	Ohmite 
+Herstellerreferenz/Manufacturer reference:	 	SV-LED-151E
+size: 50mm
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/Ohmite/SV-LED-151E?qs=%2Fha2pyFaduhqcNGpiq2d6pnUpr8UAbRwE6xGWmsJnwM%3D
+link data sheet: hhttps://www.mouser.de/datasheet/2/303/sink_s-1265491.pdf

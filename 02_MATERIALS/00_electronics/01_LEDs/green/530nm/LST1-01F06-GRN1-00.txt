@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	LED Engin 
+Herstellerreferenz/Manufacturer reference:	 	LZ4-00B208-0000 
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/New-Energy/LST1-01F06-GRN1-00?qs=%2Fha2pyFaduilZtmip5qW93stKzHkiaLcyez3oDIo1CRXyigWWpb5SQ%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/810/NewEnergy_StarBoard_Horticulture_Osram_DataSheet-2326228.pdf
