@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mod_reactor_controller.koradserial &mdash; mod_reactor_controller 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> mod_reactor_controller
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Welcome to mod_reactor_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../controller.html">controller module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">modules module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multi_ramp.html">multi_ramp module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mod_reactor_controller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>mod_reactor_controller.koradserial</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mod_reactor_controller.koradserial</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Serial communication with Korad KA3xxxP power supplies.</span>
+
+<span class="sd">The intent is to give easy access to the power supply as Python objects, eliminating the need to know</span>
+<span class="sd">special codes.</span>
+
+<span class="sd">The object supports the python `with` statement to release the serial port automatically:</span>
+
+<span class="sd">from koradserial import KoradSerial</span>
+
+<span class="sd">with KoradSerial(&#39;/dev/tty.usbmodemfd121&#39;) as device:</span>
+<span class="sd">    print &quot;Model: &quot;, device.model</span>
+<span class="sd">    print &quot;Status: &quot;, device.status</span>
+
+<span class="sd">LICENSE: MIT</span>
+
+<span class="sd">RESOURCES:</span>
+
+<span class="sd">http://www.eevblog.com/forum/testgear/power-supply-ps3005d-ka3005d-rs232-protocol/</span>
+<span class="sd">http://www.eevblog.com/forum/testgear/korad-ka3005p-io-commands/</span>
+<span class="sd">http://sigrok.org/wiki/Velleman_PS3005D</span>
+<span class="sd">https://gist.github.com/k-nowicki/5379272</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">import</span> <span class="nn">serial</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;KoradSerial&#39;</span><span class="p">,</span> <span class="s1">&#39;ChannelMode&#39;</span><span class="p">,</span> <span class="s1">&#39;OnOffState&#39;</span><span class="p">,</span> <span class="s1">&#39;Tracking&#39;</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">ChannelMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents channel modes.</span>
+
+<span class="sd">    These values should correspond to the values returned by the ``STATUS?`` command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">constant_current</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">constant_voltage</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">OnOffState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents on/off states.</span>
+
+<span class="sd">    This could just as easily be done as a Boolean, but is explicit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">off</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">on</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">Tracking</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Tracking state for a multi-channel power supply.</span>
+
+<span class="sd">    These values should correspond to the values returned by the ``STATUS?`` command.</span>
+
+<span class="sd">    There seems to be conflicting information about these values.</span>
+
+<span class="sd">    The other values I&#39;ve seen are:</span>
+<span class="sd">    *   0 - independent</span>
+<span class="sd">    *   1 - series</span>
+<span class="sd">    *   2 - parallel</span>
+<span class="sd">    *   3 - symmetric</span>
+
+<span class="sd">    However, I don&#39;t have a multi-channel power supply to test these.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">independent</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">parallel</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<span class="k">class</span> <span class="nc">Status</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decode the KoradSerial status byte.</span>
+
+<span class="sd">    It appears that the firmware is a little wonky here.</span>
+
+<span class="sd">    SOURCE:</span>
+
+<span class="sd">    Taken from http://www.eevblog.com/forum/testgear/korad-ka3005p-io-commands/</span>
+
+<span class="sd">    Contents 8 bits in the following format</span>
+<span class="sd">        Bit     Item        Description</span>
+<span class="sd">        0       CH1         0=CC mode, 1=CV mode</span>
+<span class="sd">        1       CH2         0=CC mode, 1=CV mode</span>
+<span class="sd">        2, 3    Tracking    00=Independent, 01=Tracking series,11=Tracking parallel</span>
+<span class="sd">        4       Beep        0=Off, 1=On</span>
+<span class="sd">        5       Lock        0=Lock, 1=Unlock</span>
+<span class="sd">        6       Output      0=Off, 1=On</span>
+<span class="sd">        7       N/A         N/A</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize object with a KoradSerial status character.</span>
+
+<span class="sd">        :param status: Status value</span>
+<span class="sd">        :type status: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Status</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel1</span> <span class="o">=</span> <span class="n">ChannelMode</span><span class="p">(</span><span class="n">status</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel2</span> <span class="o">=</span> <span class="n">ChannelMode</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span> <span class="o">=</span> <span class="n">Tracking</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beep</span> <span class="o">=</span> <span class="n">OnOffState</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">OnOffState</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">OnOffState</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Channel 1: </span><span class="si">{0}</span><span class="s2">, Channel 2: </span><span class="si">{1}</span><span class="s2">, Tracking: </span><span class="si">{2}</span><span class="s2">, Beep: </span><span class="si">{3}</span><span class="s2">, Lock: </span><span class="si">{4}</span><span class="s2">, Output: </span><span class="si">{5}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beep</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">float_or_none</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="KoradSerial"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial">[docs]</a><span class="k">class</span> <span class="nc">KoradSerial</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Wrapper for communicating with a programmable KoradSerial KA3xxxxP power supply as a serial interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="KoradSerial.Channel"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Channel">[docs]</a>    <span class="k">class</span> <span class="nc">Channel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Wrap a channel. &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_</span><span class="p">,</span> <span class="n">channel_number</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">            :type serial_: KoradSerial.Serial</span>
+<span class="sd">            :type channel_number: int</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">KoradSerial</span><span class="o">.</span><span class="n">Channel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span> <span class="o">=</span> <span class="n">serial_</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="n">channel_number</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send_receive</span><span class="p">(</span><span class="s2">&quot;ISET</span><span class="si">{0}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">),</span> <span class="n">fixed_length</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="c1"># There&#39;s a bug that return a 6th character of previous output.</span>
+            <span class="c1"># This has to be read and discarded otherwise it will be prepended to the next output</span>
+            <span class="k">return</span> <span class="n">float_or_none</span><span class="p">(</span><span class="n">result</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+
+        <span class="nd">@current</span><span class="o">.</span><span class="n">setter</span>
+        <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;ISET</span><span class="si">{0}</span><span class="s2">:</span><span class="si">{1:05.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">float_or_none</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send_receive</span><span class="p">(</span><span class="s2">&quot;VSET</span><span class="si">{0}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">),</span> <span class="n">fixed_length</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+
+        <span class="nd">@voltage</span><span class="o">.</span><span class="n">setter</span>
+        <span class="k">def</span> <span class="nf">voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;VSET</span><span class="si">{0}</span><span class="s2">:</span><span class="si">{1:05.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">output_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Retrieve this channel&#39;s current current output.</span>
+
+<span class="sd">            :return: Amperes</span>
+<span class="sd">            :rtype: float or None</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send_receive</span><span class="p">(</span><span class="s2">&quot;IOUT</span><span class="si">{0}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">),</span> <span class="n">fixed_length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">float_or_none</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">output_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Retrieve this channel&#39;s current current voltage.</span>
+
+<span class="sd">            :return: Volts</span>
+<span class="sd">            :rtype: float or None</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send_receive</span><span class="p">(</span><span class="s2">&quot;VOUT</span><span class="si">{0}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">),</span> <span class="n">fixed_length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">float_or_none</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="KoradSerial.Memory"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Memory">[docs]</a>    <span class="k">class</span> <span class="nc">Memory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Wrap a memory setting. &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_</span><span class="p">,</span> <span class="n">memory_number</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">KoradSerial</span><span class="o">.</span><span class="n">Memory</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span> <span class="o">=</span> <span class="n">serial_</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="n">memory_number</span>
+
+<div class="viewcode-block" id="KoradSerial.Memory.recall"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Memory.recall">[docs]</a>        <span class="k">def</span> <span class="nf">recall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Recall this memory&#39;s settings.  &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;RCL</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="KoradSerial.Memory.save"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Memory.save">[docs]</a>        <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Save the current voltage and current to this memory. &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;SAV</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">))</span></div></div>
+
+<div class="viewcode-block" id="KoradSerial.OnOffButton"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.OnOffButton">[docs]</a>    <span class="k">class</span> <span class="nc">OnOffButton</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Wrap an off/off button. &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serial_</span><span class="p">,</span> <span class="n">on_command</span><span class="p">,</span> <span class="n">off_command</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">KoradSerial</span><span class="o">.</span><span class="n">OnOffButton</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span> <span class="o">=</span> <span class="n">serial_</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on</span> <span class="o">=</span> <span class="n">on_command</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_off</span> <span class="o">=</span> <span class="n">off_command</span>
+
+<div class="viewcode-block" id="KoradSerial.OnOffButton.on"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.OnOffButton.on">[docs]</a>        <span class="k">def</span> <span class="nf">on</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="KoradSerial.OnOffButton.off"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.OnOffButton.off">[docs]</a>        <span class="k">def</span> <span class="nf">off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_off</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="KoradSerial.Serial"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Serial">[docs]</a>    <span class="k">class</span> <span class="nc">Serial</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Serial operations.</span>
+
+<span class="sd">        There are some quirky things in communication. They go here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">KoradSerial</span><span class="o">.</span><span class="n">Serial</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">port</span><span class="p">,</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;baudrate&#39;</span><span class="p">],</span><span class="n">timeout</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">],</span><span class="n">parity</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;parity&#39;</span><span class="p">],</span><span class="n">rtscts</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;rtscts&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="KoradSerial.Serial.read_character"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Serial.read_character">[docs]</a>        <span class="k">def</span> <span class="nf">read_character</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;read: </span><span class="si">{0}</span><span class="s2"> = &#39;</span><span class="si">{1}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">c</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;read: timeout&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">c</span></div>
+
+<div class="viewcode-block" id="KoradSerial.Serial.read_string"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Serial.read_string">[docs]</a>        <span class="k">def</span> <span class="nf">read_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixed_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Read a string.</span>
+
+<span class="sd">            It appears that the KoradSerial PSU returns zero-terminated strings.</span>
+
+<span class="sd">            :return: str</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_character</span><span class="p">()</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">fixed_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="n">fixed_length</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_character</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="KoradSerial.Serial.send"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Serial.send">[docs]</a>        <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;_send: &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="KoradSerial.Serial.send_receive"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.Serial.send_receive">[docs]</a>        <span class="k">def</span> <span class="nf">send_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">fixed_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">fixed_length</span><span class="p">)</span></div></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">KoradSerial</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span> <span class="o">=</span> <span class="n">KoradSerial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Channels: adjust voltage and current,  discover current output voltage.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">KoradSerial</span><span class="o">.</span><span class="n">Channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+        <span class="c1"># Memory recall/save buttons 1 through 5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memories</span> <span class="o">=</span> <span class="p">[</span><span class="n">KoradSerial</span><span class="o">.</span><span class="n">Memory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)]</span>
+
+        <span class="c1"># Second column buttons</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beep</span> <span class="o">=</span> <span class="n">KoradSerial</span><span class="o">.</span><span class="n">OnOffButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="p">,</span> <span class="s2">&quot;BEEP1&quot;</span><span class="p">,</span> <span class="s2">&quot;BEEP0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">KoradSerial</span><span class="o">.</span><span class="n">OnOffButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="p">,</span> <span class="s2">&quot;OUT1&quot;</span><span class="p">,</span> <span class="s2">&quot;OUT0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">over_current_protection</span> <span class="o">=</span> <span class="n">KoradSerial</span><span class="o">.</span><span class="n">OnOffButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="p">,</span> <span class="s2">&quot;OCP1&quot;</span><span class="p">,</span> <span class="s2">&quot;OCP0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">over_voltage_protection</span> <span class="o">=</span> <span class="n">KoradSerial</span><span class="o">.</span><span class="n">OnOffButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="p">,</span> <span class="s2">&quot;OVP1&quot;</span><span class="p">,</span> <span class="s2">&quot;OVP0&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See documentation for Python&#39;s ``with`` command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; See documentation for Python&#39;s ``with`` command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1"># Serial operations</span>
+    <span class="c1"># ################################################################################</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Report whether the serial port is open.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">isOpen</span><span class="p">()</span>
+
+<div class="viewcode-block" id="KoradSerial.close"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Close the serial port &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="KoradSerial.open"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Open the serial port &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">open</span><span class="p">()</span></div>
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1"># Power supply operations</span>
+    <span class="c1"># ################################################################################</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Report the power supply model information.</span>
+
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send_receive</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Report the power supply status.</span>
+
+<span class="sd">        :rtype: KoradSerial.Status or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;STATUS?&quot;</span><span class="p">)</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">read_character</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">status</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Status</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+
+<div class="viewcode-block" id="KoradSerial.track"><a class="viewcode-back" href="../../multi_ramp.html#multi_ramp.KoradSerial.track">[docs]</a>    <span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set tracking mode.</span>
+
+<span class="sd">        This does nothing on single-channel power supply.</span>
+
+<span class="sd">        :param value: Tracking mode to set.</span>
+<span class="sd">        :type value: Tracking</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">translate</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Tracking</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span> <span class="s2">&quot;TRACK0&quot;</span><span class="p">,</span>
+            <span class="n">Tracking</span><span class="o">.</span><span class="n">series</span><span class="p">:</span> <span class="s2">&quot;TRACK1&quot;</span><span class="p">,</span>
+            <span class="n">Tracking</span><span class="o">.</span><span class="n">parallel</span><span class="p">:</span> <span class="s2">&quot;TRACK2&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">translate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__serial</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">translate</span><span class="p">[</span><span class="n">value</span><span class="p">])</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Daniel Kowalczyk, Dirk Ziegenbalg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+  <div id="other-versions-div" class="rst-versions" data-toggle="rst-versions" role="note" aria-label="Versions" style="visibility: hidden">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other Versions</span>
+      1.0.0
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl id="other-versions-dl"/>
+    </div>
+  </div>
+  <script>
+    function addVersion(name) {
+      var dd = document.createElement("dd");
+      var a = document.createElement("a");
+      a.href = "../../../" + name;
+      a.innerText = name;
+      dd.appendChild(a);
+      document.getElementById('other-versions-dl').appendChild(dd);
+    }
+    // Get versions.txt and add a version for each line
+    fetch("../../../versions.txt").then(response => {
+      if (response.ok) {
+        document.getElementById('other-versions-div').style.visibility = "visible";
+        return response.text().then(text => text.split(/\r?\n/).forEach(addVersion))
+      }
+    });
+  </script>
+
+
+</body>
+</html>

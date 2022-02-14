@@ -1,4 +1,4 @@
-Hersteller/Manufacturer: 	Rademacher
+ Hersteller/Manufacturer: 	Rademacher
 EAN / GTIN: 4031909007650
 Herstellerreferenz/Manufacturer reference:	 	914-HP
 Verkäufer/Supplier: Conrad Electronics

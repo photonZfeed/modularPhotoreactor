@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>controller module &mdash; mod_reactor_controller 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="modules module" href="modules.html" />
+    <link rel="prev" title="Welcome to mod_reactor_controller" href="readme.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> mod_reactor_controller
+          </a>
+              <div class="version">
+                1.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Welcome to mod_reactor_controller</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">controller module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">modules module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_ramp.html">multi_ramp module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">mod_reactor_controller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>controller module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/controller.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-controller">
+<span id="controller-module"></span><h1>controller module<a class="headerlink" href="#module-controller" title="Permalink to this headline"></a></h1>
+<p><cite>mod_reactor_controller</cite> implements the  class:
+<cite>Controller</cite></p>
+<p>The module mod_reactor_controller runs the hardware mod_reactor_controller of the modular photoreactor as an instance of the <cite>Controller</cite>
+class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="controller.Controller">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">controller.</span></span><span class="sig-name descname"><span class="pre">Controller</span></span><a class="reference internal" href="_modules/controller.html#Controller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.cb_global_button_handling">
+<span class="sig-name descname"><span class="pre">cb_global_button_handling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.cb_global_button_handling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.cb_global_button_handling" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that configures global button functions (button pressed = true).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – Index number of the gui button.</p></li>
+<li><p><strong>pressed</strong> (<em>boolean</em>) – State of gui button (true if button is pressed).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.cb_global_tab_handling">
+<span class="sig-name descname"><span class="pre">cb_global_tab_handling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.cb_global_tab_handling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.cb_global_tab_handling" title="Permalink to this definition"></a></dt>
+<dd><p>Callback that handles tabs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – Index number of the gui button.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="controller.Controller.csv">
+<span class="sig-name descname"><span class="pre">csv</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'csv'</span> <span class="pre">from</span> <span class="pre">'C:\\Program</span> <span class="pre">Files\\Python39\\lib\\csv.py'&gt;</span></em><a class="headerlink" href="#controller.Controller.csv" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.disconnect_tk">
+<span class="sig-name descname"><span class="pre">disconnect_tk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.disconnect_tk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.disconnect_tk" title="Permalink to this definition"></a></dt>
+<dd><p>Disconnects tinkerforge connection and <cite>LCD 128x64 Bricklet</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.initialize_modules">
+<span class="sig-name descname"><span class="pre">initialize_modules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.initialize_modules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.initialize_modules" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the installed modules.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.initialize_tk">
+<span class="sig-name descname"><span class="pre">initialize_tk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.initialize_tk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.initialize_tk" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes tinkerforge connection and <cite>LCD 128x64 Bricklet</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.make_logs">
+<span class="sig-name descname"><span class="pre">make_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.make_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.make_logs" title="Permalink to this definition"></a></dt>
+<dd><p>Makes logs of the data at certain points in time.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="controller.Controller.modules">
+<span class="sig-name descname"><span class="pre">modules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'mod_reactor_controller.modules'</span> <span class="pre">from</span> <span class="pre">'D:\\Documents\\CIW</span> <span class="pre">Ulm\\Software\\Playground\\venv\\lib\\site-packages\\mod_reactor_controller\\modules.py'&gt;</span></em><a class="headerlink" href="#controller.Controller.modules" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="controller.Controller.re">
+<span class="sig-name descname"><span class="pre">re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'re'</span> <span class="pre">from</span> <span class="pre">'C:\\Program</span> <span class="pre">Files\\Python39\\lib\\re.py'&gt;</span></em><a class="headerlink" href="#controller.Controller.re" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.read_configs">
+<span class="sig-name descname"><span class="pre">read_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.read_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.read_configs" title="Permalink to this definition"></a></dt>
+<dd><p>Read config files and add content to modules_config attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="controller.Controller.save_logs">
+<span class="sig-name descname"><span class="pre">save_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#Controller.save_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.Controller.save_logs" title="Permalink to this definition"></a></dt>
+<dd><p>Saves logs as csv. files. Existing files are  overwritten with updated data at certain points in time. Filename
+convention: <cite>time_Experiment.csv</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="controller.Controller.threading">
+<span class="sig-name descname"><span class="pre">threading</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;module</span> <span class="pre">'threading'</span> <span class="pre">from</span> <span class="pre">'C:\\Program</span> <span class="pre">Files\\Python39\\lib\\threading.py'&gt;</span></em><a class="headerlink" href="#controller.Controller.threading" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="controller.start">
+<span class="sig-prename descclassname"><span class="pre">controller.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/controller.html#start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#controller.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="readme.html" class="btn btn-neutral float-left" title="Welcome to mod_reactor_controller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="modules module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Daniel Kowalczyk, Dirk Ziegenbalg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+  <div id="other-versions-div" class="rst-versions" data-toggle="rst-versions" role="note" aria-label="Versions" style="visibility: hidden">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other Versions</span>
+      1.1.0
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl id="other-versions-dl"/>
+    </div>
+  </div>
+  <script>
+    function addVersion(name) {
+      var dd = document.createElement("dd");
+      var a = document.createElement("a");
+      a.href = "../" + name;
+      a.innerText = name;
+      dd.appendChild(a);
+      document.getElementById('other-versions-dl').appendChild(dd);
+    }
+    // Get versions.txt and add a version for each line
+    fetch("../versions.txt").then(response => {
+      if (response.ok) {
+        document.getElementById('other-versions-div').style.visibility = "visible";
+        return response.text().then(text => text.split(/\r?\n/).forEach(addVersion))
+      }
+    });
+  </script>
+
+
+</body>
+</html>

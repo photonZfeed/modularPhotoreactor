@@ -1,0 +1,15 @@
+red banana plug
+Hersteller/Manufacturer: 	BKL electronoc
+EAN: 4011376701190
+Herstellerreferenz/Manufacturer reference:	 	072149-P
+Verkäufer/Supplier: conrad electronics
+
+link: https://www.conrad.de/de/p/bkl-electronic-072149-p-bananenstecker-stecker-gerade-stift-4-mm-rot-1-st-730106.html
+
+black banana plug
+Hersteller/Manufacturer: 	BKL electronoc
+EAN: 4011376255600
+Herstellerreferenz/Manufacturer reference:	 	072150-P
+Verkäufer/Supplier: conrad electronics
+
+link: https://www.conrad.de/de/p/bkl-electronic-072150-p-bananenstecker-stecker-gerade-stift-4-mm-schwarz-1-st-730114.html

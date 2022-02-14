@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modules &mdash; mod_reactor_controller 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> mod_reactor_controller
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Welcome to mod_reactor_controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../controller.html">controller module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">modules module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi_ramp.html">multi_ramp module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mod_reactor_controller</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>modules</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modules</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    General functions and specific functions for different extension modules of the modular photoreactor.</span>
+
+<span class="sd">    `modules` implements the classes:</span>
+
+<span class="sd">    - `General_functions`</span>
+<span class="sd">    - `Pump`</span>
+<span class="sd">    - `Pressure`</span>
+<span class="sd">    - `LED`</span>
+<span class="sd">    - `Stirrer`</span>
+<span class="sd">    - `Fan`</span>
+<span class="sd">    - `Tempering`</span>
+
+<span class="sd">    The classes of this module handle generation of the instances for different hardware modules of the mod_reactor_controller.</span>
+<span class="sd">    All classed implement the following functionalities:</span>
+
+<span class="sd">    - import necessary tinkerforge modules and general modules</span>
+<span class="sd">    - setup tinkerforge IP connection</span>
+<span class="sd">    - module specific definitions</span>
+<span class="sd">    - initialize module specific functions, i.e. set or get values</span>
+<span class="sd">    - initialize LCD GUI tab generation</span>
+<span class="sd">    - draw/update LCD GUI tab</span>
+<span class="sd">    - define input buttons and their functions if needed</span>
+<span class="sd">    - data logging</span>
+
+<span class="sd">    The class `General_functions` provides functions that are used in a general context.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">simple_pid</span> <span class="kn">import</span> <span class="n">PID</span>
+
+
+<div class="viewcode-block" id="General_functions"><a class="viewcode-back" href="../modules.html#modules.General_functions">[docs]</a><span class="k">class</span> <span class="nc">General_functions</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure general functionality</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+
+<div class="viewcode-block" id="General_functions.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.General_functions.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buttons</span><span class="p">,</span> <span class="n">tab_number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        buttons : list</span>
+<span class="sd">            Used buttons.</span>
+
+<span class="sd">        tab_number : int</span>
+<span class="sd">            Number of active tab.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        int : Number of the active tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+        <span class="c1"># self.gui[&quot;tab_number&quot;] += 1</span>
+        <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_tab_selected</span><span class="p">(</span><span class="n">tab_number</span><span class="p">)</span>
+        <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+
+        <span class="c1"># self.gui[&quot;tab_number&quot;] += 1</span>
+        <span class="c1"># lcd.set_gui_tab_selected(self.gui[&quot;tab_number&quot;])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tabs&quot;</span><span class="p">][</span><span class="n">tab_number</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tab_number</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">buttons</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">buttons</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;button_number&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;button_number&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;buttons&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;button_number&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">tab_number</span></div></div>
+
+    <span class="c1"># def get_tab_number(self):</span>
+    <span class="c1">#     for i in self.gui[&quot;tabs&quot;].values():</span>
+    <span class="c1">#         for ii in i:</span>
+    <span class="c1">#             try:</span>
+    <span class="c1">#                 index = ii.index(self.module_number)</span>
+    <span class="c1">#                 tab_number = self.gui.</span>
+    <span class="c1">#     self.gui[&quot;tab_number&quot;]</span>
+
+
+<div class="viewcode-block" id="Pump"><a class="viewcode-back" href="../modules.html#modules.Pump">[docs]</a><span class="k">class</span> <span class="nc">Pump</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure the functions of the `Pump Module`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module_number : str</span>
+<span class="sd">        Number of the module.</span>
+<span class="sd">    tk_attributes : dict</span>
+<span class="sd">        Tinkerforge bricklet specific information.</span>
+<span class="sd">    modules_conf : dict</span>
+<span class="sd">        Configurations of the connected modules.</span>
+<span class="sd">    gui : dict</span>
+<span class="sd">        Gui specific key value pairs.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the module.</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        Pump module specific attributes.</span>
+<span class="sd">    logs : list</span>
+<span class="sd">        Logged data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_industrial_analog_out_v2</span> <span class="kn">import</span> <span class="n">BrickletIndustrialAnalogOutV2</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_number</span><span class="p">,</span> <span class="n">tk_attributes</span><span class="p">,</span> <span class="n">modules_conf</span><span class="p">,</span> <span class="n">gui</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Pump&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span> <span class="o">=</span> <span class="n">tk_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span> <span class="o">=</span> <span class="n">modules_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Pump&quot;</span><span class="p">][</span><span class="s2">&quot;Pump&quot;</span><span class="p">][</span><span class="s2">&quot;Flow_Rate&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_current_flowrate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span> <span class="o">=</span> <span class="n">module_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">gui</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pump.connect"><a class="viewcode-back" href="../modules.html#modules.Pump.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds up the IP connection for the used tinkerforge bricklets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            Tinkerforge bricklet UIDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Pump&quot;</span><span class="p">][</span><span class="s2">&quot;Pump&quot;</span><span class="p">][</span><span class="s2">&quot;UID&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BrickletIndustrialAnalogOutV2</span><span class="p">(</span><span class="n">UID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;ipcon&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_enabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">UID_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">UID_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UID</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UID_list</span></div>
+
+<div class="viewcode-block" id="Pump.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.Pump.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">General_functions</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;+-button&quot;</span><span class="p">,</span> <span class="s2">&quot;--button&quot;</span><span class="p">],</span>
+                                                                  <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Pump.draw_tab"><a class="viewcode-back" href="../modules.html#modules.Pump.draw_tab">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draws GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lcd</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+            <span class="c1"># lcd.set_gui_tab_selected(self.gui[&quot;tab_number&quot;])</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span>
+                          <span class="s1">&#39;Flow rate: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; ml/min&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-button&quot;</span><span class="p">],</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--button&quot;</span><span class="p">],</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pump.set_current_flowrate"><a class="viewcode-back" href="../modules.html#modules.Pump.set_current_flowrate">[docs]</a>    <span class="k">def</span> <span class="nf">set_current_flowrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flowrate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates a control current for the pump in dependence to the set flow rate. Results are stored</span>
+<span class="sd">        in `attributes[&quot;FlowRate&quot;]`and `attributes[&quot;current&quot;]`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        flowrate : int</span>
+<span class="sd">            Flowrate values. Valid range depends on used pump.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flowrate</span>
+        <span class="k">if</span> <span class="n">flowrate</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="mf">3.6622</span>  <span class="c1"># Parameters for the control current calculation. Valid for a maximum stroke volume of 0.52 mL</span>
+            <span class="c1"># and a flowrate of 10 to less than 30 mL per min.</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="mf">0.1468</span>
+        <span class="k">if</span> <span class="n">flowrate</span> <span class="o">&gt;=</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="mf">3.6184</span>  <span class="c1"># Parameters for the control current calculation. Valid for a maximum stroke volume of 0.52 mL</span>
+            <span class="c1"># and a flowrate of more than 30 mL per min.</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="mf">0.1508</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+            <span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flowrate</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">c</span>  <span class="c1"># Here the set flowrate is converted into a control current (in mA).</span></div>
+
+<div class="viewcode-block" id="Pump.start_pump"><a class="viewcode-back" href="../modules.html#modules.Pump.start_pump">[docs]</a>    <span class="k">def</span> <span class="nf">start_pump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the calculated control current to start the pump.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_current</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pump.button_handling"><a class="viewcode-back" href="../modules.html#modules.Pump.button_handling">[docs]</a>    <span class="k">def</span> <span class="nf">button_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns functions to GUI buttons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        button : boolean</span>
+<span class="sd">            State of the pressed button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-button&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">106</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+                <span class="s2">&quot;FlowRate&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># LCD button &quot;+&quot; set flow rate of pump increases by 1 mL/min if flow rate is beneath 106 mL/min.</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--button&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+                <span class="s2">&quot;FlowRate&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># LCD button &quot;-&quot; set flow rate of pump decreases by 1 mL/min if flow rate is above 10 mL/min.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_current_flowrate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_pump</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs flow rates in a log list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with header and logged flow rates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Flow Rate/(ml/min)&quot;</span><span class="p">,</span>
+                  <span class="p">]</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;FlowRate&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span></div>
+
+
+<div class="viewcode-block" id="Pressure"><a class="viewcode-back" href="../modules.html#modules.Pressure">[docs]</a><span class="k">class</span> <span class="nc">Pressure</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure the functions of the `Pressure Module`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module_number : str</span>
+<span class="sd">        Number of the module.</span>
+<span class="sd">    tk_attributes : dict</span>
+<span class="sd">        Tinkerforge bricklet specific information.</span>
+<span class="sd">    modules_conf : dict</span>
+<span class="sd">        Configurations of the connected modules.</span>
+<span class="sd">    gui : dict</span>
+<span class="sd">        Gui specific key value pairs.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the module.</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        Pressure module specific attributes.</span>
+<span class="sd">    logs : list</span>
+<span class="sd">        Logged data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_industrial_dual_analog_in_v2</span> <span class="kn">import</span> <span class="n">BrickletIndustrialDualAnalogInV2</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_industrial_analog_out_v2</span> <span class="kn">import</span> <span class="n">BrickletIndustrialAnalogOutV2</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_number</span><span class="p">,</span> <span class="n">tk_attributes</span><span class="p">,</span> <span class="n">modules_conf</span><span class="p">,</span> <span class="n">gui</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Pressure&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span> <span class="o">=</span> <span class="n">tk_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span> <span class="o">=</span> <span class="n">modules_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span> <span class="o">=</span> <span class="n">module_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">gui</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pressure.connect"><a class="viewcode-back" href="../modules.html#modules.Pressure.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds up the IP connection for the used tinkerforge bricklets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            Tinkerforge bricklet UIDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;UID&quot;</span><span class="p">]</span>
+        <span class="n">UID_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;UID_2&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BrickletIndustrialDualAnalogInV2</span><span class="p">(</span><span class="n">UID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;ipcon&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CALLBACK_VOLTAGE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb_pressure_readout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_voltage_callback_configuration</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;Channel&quot;</span><span class="p">]),</span> <span class="mi">1000</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BrickletIndustrialAnalogOutV2</span><span class="p">(</span><span class="n">UID_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;ipcon&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_voltage</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">UID_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">UID_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UID</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UID_list</span></div>
+
+<div class="viewcode-block" id="Pressure.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.Pressure.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">General_functions</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[],</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Pressure.draw_tab"><a class="viewcode-back" href="../modules.html#modules.Pressure.draw_tab">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draws GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lcd</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span>
+                          <span class="s1">&#39;Pressure: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39; bar&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pressure.cb_pressure_readout"><a class="viewcode-back" href="../modules.html#modules.Pressure.cb_pressure_readout">[docs]</a>    <span class="k">def</span> <span class="nf">cb_pressure_readout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">voltage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback that reads voltage signal of the pressure sensor and converts it to pressure in bar. Result is stored</span>
+<span class="sd">        in `attributes[&quot;pressure&quot;]`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;Pressure&quot;</span><span class="p">][</span><span class="s2">&quot;Channel&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0019</span> <span class="o">*</span> <span class="n">voltage</span> <span class="o">+</span> <span class="mf">0.9593</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs pressure in a log list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with header and logged flow rates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Pressure/bar&quot;</span><span class="p">,</span>
+                  <span class="p">]</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span></div>
+
+
+<div class="viewcode-block" id="LED"><a class="viewcode-back" href="../modules.html#modules.LED">[docs]</a><span class="k">class</span> <span class="nc">LED</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure the functions of the LED Module</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module_number : str</span>
+<span class="sd">        Number of the module.</span>
+<span class="sd">    tk_attributes : dict</span>
+<span class="sd">        Tinkerforge bricklet specific information.</span>
+<span class="sd">    modules_conf : dict</span>
+<span class="sd">        Configurations of the connected modules.</span>
+<span class="sd">    gui : dict</span>
+<span class="sd">        Gui specific key value pairs.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the module.</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        LED module specific attributes.</span>
+<span class="sd">    logs : list</span>
+<span class="sd">        Logged data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_io4_v2</span> <span class="kn">import</span> <span class="n">BrickletIO4V2</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_number</span><span class="p">,</span> <span class="n">tk_attributes</span><span class="p">,</span> <span class="n">modules_conf</span><span class="p">,</span> <span class="n">gui</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;LED&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span> <span class="o">=</span> <span class="n">tk_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span> <span class="o">=</span> <span class="n">modules_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;freq_LED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span> <span class="o">=</span> <span class="n">module_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">gui</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED_Module&quot;</span><span class="p">]</span> <span class="o">==</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;Total_Number_of_LED_Modules&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">()</span>
+
+<div class="viewcode-block" id="LED.set_instances"><a class="viewcode-back" href="../modules.html#modules.LED.set_instances">[docs]</a>    <span class="k">def</span> <span class="nf">set_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_instances</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the required instances of installed LED modules to enable use of more than 1 module. The instances are</span>
+<span class="sd">        stored in `attributes[&quot;Installed_Modules&quot;]`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        modules_instances : dict</span>
+<span class="sd">            Key value pairs of connected modules.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED_Module&quot;</span><span class="p">]</span> <span class="o">==</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;Total_Number_of_LED_Modules&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">tk_instances</span> <span class="o">=</span> <span class="n">modules_instances</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tk_instances</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">tk_instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;LED&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tk_instances</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="LED.connect"><a class="viewcode-back" href="../modules.html#modules.LED.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds up the IP connection for the used tinkerforge bricklets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            Tinkerforge bricklet UIDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UID_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED_Module&quot;</span><span class="p">]</span> <span class="o">==</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;Total_Number_of_LED_Modules&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]:</span>
+                <span class="n">UID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;UID&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BrickletIO4V2</span><span class="p">(</span><span class="n">UID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;ipcon&quot;</span><span class="p">])</span>
+                <span class="n">UID_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UID</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UID_list</span></div>
+
+<div class="viewcode-block" id="LED.set_parameters"><a class="viewcode-back" href="../modules.html#modules.LED.set_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets bricklets to the desired parameters, i.e. channel of I/O bricklet, frequency of PWM signal and the duty</span>
+<span class="sd">        cycle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED_Module&quot;</span><span class="p">]</span> <span class="o">==</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;Total_Number_of_LED_Modules&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]:</span>
+                <span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;Channels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_pwm_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;freq_LED&quot;</span><span class="p">],</span>
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="LED.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.LED.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes GUI tab.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED_Module&quot;</span><span class="p">]</span> <span class="o">==</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;Total_Number_of_LED_Modules&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">General_functions</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;+-Frq&quot;</span><span class="p">,</span> <span class="s2">&quot;--Frq&quot;</span><span class="p">,</span> <span class="s2">&quot;+-Hz&quot;</span><span class="p">,</span> <span class="s2">&quot;--Hz&quot;</span><span class="p">],</span>
+                                                                      <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="LED.draw_tab"><a class="viewcode-back" href="../modules.html#modules.LED.draw_tab">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draws GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED_Module&quot;</span><span class="p">]</span> <span class="o">==</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span>
+                    <span class="s2">&quot;Total_Number_of_LED_Modules&quot;</span><span class="p">]:</span>
+            <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lcd</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+                <span class="c1"># lcd.set_gui_tab_selected(self.gui[&quot;tab_number&quot;])</span>
+                <span class="n">LED_modules</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s1">&#39;LED&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                        <span class="n">LED_modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">LED_modules</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;LED&quot;</span><span class="p">][</span><span class="s2">&quot;Channel_Names&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)):</span>
+                        <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">counter</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span> <span class="n">ii</span><span class="p">)</span>
+                        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">55</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span>
+                              <span class="s1">&#39;Frq.:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;freq_LED&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+                <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">55</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span>
+                              <span class="s1">&#39;ON/OFF:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;%&#39;</span><span class="p">)</span>
+
+                <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-Frq&quot;</span><span class="p">],</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>  <span class="c1"># Tune pulse frequnecy of LED</span>
+                <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--Frq&quot;</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>  <span class="c1"># Tune pulse frequnecy of LED</span>
+                <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-Hz&quot;</span><span class="p">],</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>  <span class="c1"># Tune duty cycle of LED</span>
+                <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--Hz&quot;</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>  <span class="c1"># Tune duty cycle of LED</span></div>
+
+<div class="viewcode-block" id="LED.button_handling"><a class="viewcode-back" href="../modules.html#modules.LED.button_handling">[docs]</a>    <span class="k">def</span> <span class="nf">button_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns functions to GUI buttons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        button : boolean</span>
+<span class="sd">            State of the pressed button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-Frq&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+                <span class="s2">&quot;freq_LED&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">10</span>  <span class="c1"># LCD button &quot;+&quot; at position (75, 10) set LED pulse frequency increases by 1 Hz</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--Frq&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;freq_LED&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+                <span class="s2">&quot;freq_LED&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">10</span>  <span class="c1"># LCD button &quot;-&quot; at position (100, 10) set LED pulse frequency decreases by 1 Hz if frequency is above 1 Hz</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-Hz&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+                <span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">500</span>  <span class="c1"># LCD button &quot;+&quot; at position (75, 34) set duty cycle increases by 5 %</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--Hz&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span>
+                <span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">500</span>  <span class="c1"># LCD button &quot;-&quot; at position (100, 34) set duty cycle decreases by 5 % if duty cycle is above 0 %</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs frequency and duty cycle in a log list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with header and logged frequency and duty cycle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;LED freq./Hz&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Duty Cycle/%&quot;</span>
+                  <span class="p">]</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;freq_LED&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle_LED&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span></div>
+
+
+<div class="viewcode-block" id="Stirrer"><a class="viewcode-back" href="../modules.html#modules.Stirrer">[docs]</a><span class="k">class</span> <span class="nc">Stirrer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure the functions of the Stirring Module</span>
+
+<span class="sd">    ...</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module_number : str</span>
+<span class="sd">        Number of the module &quot;module_5&quot;.</span>
+<span class="sd">    tk_attributes : dict</span>
+<span class="sd">        Dictionary with with tinkerforge bricklet specific information.</span>
+<span class="sd">    modules_conf : dict</span>
+<span class="sd">        Configurations of the connected modules e.g. Stirrer Module corresponds to key &quot;module_5&quot;.</span>
+<span class="sd">    gui : dict</span>
+<span class="sd">        Dictionary with gui specific key value pairs.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the module &quot;Stirrer&quot;.</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        Dictionary with Stirrer specific key value pairs.</span>
+<span class="sd">    used_module : str</span>
+<span class="sd">        &quot;module_2&quot; is the key in dict initialized_UID to get to the ID of the tinkerforge I/O bricklet.</span>
+<span class="sd">    logs : list</span>
+<span class="sd">        A list with the logged data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_io4_v2</span> <span class="kn">import</span> <span class="n">BrickletIO4V2</span>
+
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_number</span><span class="p">,</span> <span class="n">tk_attributes</span><span class="p">,</span> <span class="n">modules_conf</span><span class="p">,</span> <span class="n">gui</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Stirrer&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span> <span class="o">=</span> <span class="n">tk_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span> <span class="o">=</span> <span class="n">modules_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span> <span class="o">=</span> <span class="n">module_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">used_module</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">gui</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Stirrer.conv_duty_cycle"><a class="viewcode-back" href="../modules.html#modules.Stirrer.conv_duty_cycle">[docs]</a>    <span class="k">def</span> <span class="nf">conv_duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">RPM</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts RPM GUI input to corresponding duty cycle value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        RPM : int</span>
+<span class="sd">            Set value for stirrer RPM.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        float</span>
+<span class="sd">            Calculated value for duty cycle corresponding to stirrer RPM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PWM</span> <span class="o">=</span> <span class="mf">1.3191</span> <span class="o">*</span> <span class="n">RPM</span> <span class="o">-</span> <span class="mf">562.85</span>
+        <span class="k">return</span> <span class="n">PWM</span></div>
+
+<div class="viewcode-block" id="Stirrer.set_instances"><a class="viewcode-back" href="../modules.html#modules.Stirrer.set_instances">[docs]</a>    <span class="k">def</span> <span class="nf">set_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_instances</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the required instances of installed stirring module to enable joint use of I/O Bricklet with other modules.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        modules_instances : dict</span>
+<span class="sd">            Key value pairs of connected modules.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check how the correct instance can be transfered -&gt; use conf file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tk_instances</span> <span class="o">=</span> <span class="n">modules_instances</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tk_instances</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Stirrer.connect"><a class="viewcode-back" href="../modules.html#modules.Stirrer.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds up the IP connection for the used tinkerforge bricklets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            Tinkerforge bricklet UIDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UID_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">UID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span>
+            <span class="s2">&quot;UID&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">module_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;brick&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span><span class="o">.</span><span class="n">uid_string</span> <span class="o">==</span> <span class="n">UID</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;brick&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">used_module</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">module_number</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BrickletIO4V2</span><span class="p">(</span><span class="n">UID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;ipcon&quot;</span><span class="p">])</span>
+        <span class="n">UID_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">UID_list</span></div>
+
+<div class="viewcode-block" id="Stirrer.set_parameters"><a class="viewcode-back" href="../modules.html#modules.Stirrer.set_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets channel of I/O bricklet, frequency of pwm signal and the duty cycle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Stirrer&quot;</span><span class="p">][</span><span class="s2">&quot;Stirrer&quot;</span><span class="p">][</span><span class="s2">&quot;Channels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">used_module</span><span class="p">]</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">used_module</span><span class="p">]</span><span class="o">.</span><span class="n">set_pwm_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="mi">250000</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Stirrer.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.Stirrer.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">General_functions</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">],</span>
+                                                                  <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Stirrer.draw_tab"><a class="viewcode-back" href="../modules.html#modules.Stirrer.draw_tab">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draws GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lcd</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+            <span class="c1"># lcd.set_gui_tab_selected(self.gui[&quot;tab_number&quot;])</span>
+            <span class="n">LED_modules</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span> <span class="s1">&#39;velocity: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; rpm&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">],</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">],</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Stirrer.button_handling"><a class="viewcode-back" href="../modules.html#modules.Stirrer.button_handling">[docs]</a>    <span class="k">def</span> <span class="nf">button_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns functions to GUI buttons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        button : boolean</span>
+<span class="sd">            State of the pressed button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2300</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">50</span>  <span class="c1"># LCD button &quot;+&quot; set RPM increases by 50 if RPM is beneath 2300</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">650</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">50</span>  <span class="c1"># LCD button &quot;-&quot; set RPM decreases by 50 if RPM is above 650</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs stirrer RPM in a log list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with header and logged stirrer RPM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Stirrer RPM/(1/min)&quot;</span><span class="p">,</span>
+                  <span class="p">]</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span></div>
+
+
+<div class="viewcode-block" id="Fan"><a class="viewcode-back" href="../modules.html#modules.Fan">[docs]</a><span class="k">class</span> <span class="nc">Fan</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure the functions of the Fan Module</span>
+
+<span class="sd">    ...</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module_number : str</span>
+<span class="sd">        Number of the module &quot;module_3&quot;.</span>
+<span class="sd">    tk_attributes : dict</span>
+<span class="sd">        Dictionary with with tinkerforge bricklet specific information.</span>
+<span class="sd">    modules_conf : dict</span>
+<span class="sd">        Configurations of the connected modules e.g. Fan Module corresponds to key &quot;module_3&quot;.</span>
+<span class="sd">    gui : dict</span>
+<span class="sd">        Dictionary with gui specific key value pairs.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the module &quot;Fan&quot;.</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        Dictionary with Fan specific key value pairs.</span>
+<span class="sd">    used_module : str</span>
+<span class="sd">        &quot;module_2&quot; is the key in dict initialized_UID to get to the ID of the tinkerforge I/O bricklet.</span>
+<span class="sd">    logs : list</span>
+<span class="sd">        A list with the logged data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_io4_v2</span> <span class="kn">import</span> <span class="n">BrickletIO4V2</span>
+
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_number</span><span class="p">,</span> <span class="n">tk_attributes</span><span class="p">,</span> <span class="n">modules_conf</span><span class="p">,</span> <span class="n">gui</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Fan&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span> <span class="o">=</span> <span class="n">tk_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span> <span class="o">=</span> <span class="n">modules_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Percent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span> <span class="o">=</span> <span class="n">module_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">used_module</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">gui</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;Tab_Text&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;---&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Fan.conv_duty_cycle"><a class="viewcode-back" href="../modules.html#modules.Fan.conv_duty_cycle">[docs]</a>    <span class="k">def</span> <span class="nf">conv_duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">RPM</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts RPM GUI input to corresponding duty cycle value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        RPM : int</span>
+<span class="sd">            Set value for stirrer RPM.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        float</span>
+<span class="sd">            Calculated value for duty cycle corresponding to stirrer RPM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">PWM</span> <span class="o">=</span> <span class="n">RPM</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="k">return</span> <span class="n">PWM</span></div>
+
+<div class="viewcode-block" id="Fan.set_instances"><a class="viewcode-back" href="../modules.html#modules.Fan.set_instances">[docs]</a>    <span class="k">def</span> <span class="nf">set_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_instances</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the required instances of installed fan module to enable joint use of I/O Bricklet with other modules.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        modules_instances : dict</span>
+<span class="sd">            Key value pairs of connected modules.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check how the correct instance can be transfered -&gt; use conf file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tk_instances</span> <span class="o">=</span> <span class="n">modules_instances</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tk_instances</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Fan.connect"><a class="viewcode-back" href="../modules.html#modules.Fan.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds up the IP connection for the used tinkerforge bricklets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            Tinkerforge bricklet UIDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UID_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">UID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span>
+            <span class="s2">&quot;UID&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">module_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;brick&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span><span class="o">.</span><span class="n">uid_string</span> <span class="o">==</span> <span class="n">UID</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;brick&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">used_module</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">module_number</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BrickletIO4V2</span><span class="p">(</span><span class="n">UID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;ipcon&quot;</span><span class="p">])</span>
+        <span class="n">UID_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">UID_list</span></div>
+
+<div class="viewcode-block" id="Fan.set_parameters"><a class="viewcode-back" href="../modules.html#modules.Fan.set_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets channel of I/O bricklet, frequency of pwm signal and the duty cycle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;Channels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">used_module</span><span class="p">]</span><span class="o">.</span><span class="n">set_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">used_module</span><span class="p">]</span><span class="o">.</span><span class="n">set_pwm_configuration</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="mi">250000</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Fan.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.Fan.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes GUI tab.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">General_functions</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">],</span>
+                                                                  <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Fan.draw_tab"><a class="viewcode-back" href="../modules.html#modules.Fan.draw_tab">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draws GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lcd</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+            <span class="c1"># lcd.set_gui_tab_selected(self.gui[&quot;tab_number&quot;])</span>
+            <span class="n">LED_modules</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span> <span class="s1">&#39;speed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; %&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">],</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">],</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Fan.button_handling"><a class="viewcode-back" href="../modules.html#modules.Fan.button_handling">[docs]</a>    <span class="k">def</span> <span class="nf">button_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns functions to GUI buttons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        button : boolean</span>
+<span class="sd">            State of the pressed button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">5</span>  <span class="c1"># LCD button &quot;+&quot; set RPM increases by 5 if RPM is beneath 100</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">5</span>  <span class="c1"># LCD button &quot;-&quot; set RPM decreases by 5 if RPM is above 5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Duty_Cycle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs fan RPM in a log list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with header and logged fan RPM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Fan RPM/(1/min)&quot;</span><span class="p">,</span>
+                  <span class="p">]</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;RPM&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span></div>
+
+
+<div class="viewcode-block" id="Tempering"><a class="viewcode-back" href="../modules.html#modules.Tempering">[docs]</a><span class="k">class</span> <span class="nc">Tempering</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to ensure the functions of the Tempering Module</span>
+
+<span class="sd">    ...</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    module_number : str</span>
+<span class="sd">        Number of the module &quot;module_0&quot;.</span>
+<span class="sd">    tk_attributes : dict</span>
+<span class="sd">        Dictionary with with tinkerforge bricklet specific information.</span>
+<span class="sd">    modules_conf : dict</span>
+<span class="sd">        Configurations of the connected modules e.g. Tempering Module corresponds to key &quot;module_0&quot;.</span>
+<span class="sd">    gui : dict</span>
+<span class="sd">        Dictionary with gui specific key value pairs.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the module &quot;Tempering&quot;.</span>
+<span class="sd">    attributes : dict</span>
+<span class="sd">        Dictionary with pid specific key value pairs.</span>
+<span class="sd">    logs : list</span>
+<span class="sd">        A list with the logged data.</span>
+<span class="sd">    pid : class</span>
+<span class="sd">        Class simple_pid.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_industrial_dual_relay</span> <span class="kn">import</span> <span class="n">BrickletIndustrialDualRelay</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_thermocouple_v2</span> <span class="kn">import</span> <span class="n">BrickletThermocoupleV2</span>
+    <span class="kn">from</span> <span class="nn">tinkerforge.bricklet_temperature_v2</span> <span class="kn">import</span> <span class="n">BrickletTemperatureV2</span>
+    <span class="kn">from</span> <span class="nn">simple_pid</span> <span class="kn">import</span> <span class="n">PID</span>
+    <span class="kn">import</span> <span class="nn">threading</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">module_number</span><span class="p">,</span><span class="n">tk_attributes</span><span class="p">,</span><span class="n">modules_conf</span><span class="p">,</span><span class="n">gui</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Tempering&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span> <span class="o">=</span> <span class="n">tk_attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span> <span class="o">=</span> <span class="n">modules_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_number</span> <span class="o">=</span> <span class="n">module_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;ambTemp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_irrad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_reactor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Target_Temp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;Target_temp&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_sample_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;PID_sample_time&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_output_limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;PID_output_limit&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;Offset&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span> <span class="o">=</span> <span class="n">gui</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PID</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">tunings</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">auto_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">sample_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_sample_time&quot;</span><span class="p">])</span><span class="o">/</span><span class="mi">1000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">output_limits</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span> <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_output_limit&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)])</span>
+
+<div class="viewcode-block" id="Tempering.connect"><a class="viewcode-back" href="../modules.html#modules.Tempering.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds up the IP connection for the used tinkerforge bricklets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            Tinkerforge bricklet UIDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UID_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Installed_Modules&quot;</span><span class="p">]:</span>
+            <span class="n">UID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;UID&quot;</span><span class="p">]</span>
+            <span class="n">bricktype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;Bricklet_Type&quot;</span><span class="p">]</span>
+            <span class="n">call</span> <span class="o">=</span> <span class="s2">&quot;self.&quot;</span><span class="o">+</span> <span class="n">bricktype</span> <span class="o">+</span> <span class="s1">&#39;(UID, self.tk_attributes[&quot;ipcon&quot;])&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="n">brick</span> <span class="o">=</span> <span class="s2">&quot;self.attributes[&#39;brick&#39;][self.module_number][i]&quot;</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;Callback&#39;</span><span class="p">]</span>
+            <span class="n">callback_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;Callback_target&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">callback_target</span> <span class="o">!=</span> <span class="s2">&quot;---&quot;</span><span class="p">:</span>
+                <span class="n">call</span> <span class="o">=</span> <span class="n">brick</span> <span class="o">+</span> <span class="s2">&quot;.register_callback(&quot;</span> <span class="o">+</span> <span class="s2">&quot;self.&quot;</span><span class="o">+</span> <span class="n">bricktype</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">callback</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">callback_target</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+                <span class="nb">eval</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="n">callback_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules_conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;Callback_conf&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">callback_conf</span> <span class="o">!=</span> <span class="s2">&quot;---&quot;</span><span class="p">:</span>
+                <span class="n">call</span> <span class="o">=</span> <span class="n">brick</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">callback_conf</span>
+                <span class="nb">eval</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="n">UID_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_tempering</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">UID_list</span></div>
+
+<div class="viewcode-block" id="Tempering.cb_amb_temperature"><a class="viewcode-back" href="../modules.html#modules.Tempering.cb_amb_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">cb_amb_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Divides initial temperature readout value by 100 to get to a output value in °C.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temp : int</span>
+<span class="sd">            Temperature value output (2500 = 25°C).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;ambTemp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">/</span><span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Tempering.cb_react_temperature"><a class="viewcode-back" href="../modules.html#modules.Tempering.cb_react_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">cb_react_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Divides initial temperature readout value by 100 to get to a output value in °C.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temp : int</span>
+<span class="sd">            Temperature value output (2500 = 25°C).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_reactor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">/</span><span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Tempering.cb_irrad_temperature"><a class="viewcode-back" href="../modules.html#modules.Tempering.cb_irrad_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">cb_irrad_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Divides initial temperature readout value by 100 to get to a output value in °C.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temp : int</span>
+<span class="sd">            Temperature value output (2500 = 25°C).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_irrad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">/</span><span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Tempering.init_tempering"><a class="viewcode-back" href="../modules.html#modules.Tempering.init_tempering">[docs]</a>    <span class="k">def</span> <span class="nf">init_tempering</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns dual relay bricklet for cooling and heating and closes all relays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cooling_brick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Cooling&quot;</span><span class="p">]</span>
+        <span class="n">heating_brick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Heating&quot;</span><span class="p">]</span>
+        <span class="n">heating_brick</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">cooling_brick</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tempering.cb_tempering"><a class="viewcode-back" href="../modules.html#modules.Tempering.cb_tempering">[docs]</a>    <span class="k">def</span> <span class="nf">cb_tempering</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">channel</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switches relays of dual relay bricklets on and off to enable cooling or heating and assigns monoflop time for bricklets.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cooling_brick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Cooling&quot;</span><span class="p">]</span>
+        <span class="n">heating_brick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;brick&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">module_number</span><span class="p">][</span><span class="s2">&quot;Heating&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">auto_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_sample_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_irrad&quot;</span><span class="p">])</span>
+            <span class="n">monoflop_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_sample_time&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span>
+            <span class="c1"># print(self.pid.setpoint,&quot; &quot;,monoflop_time)</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="mi">500</span>
+            <span class="k">if</span> <span class="n">monoflop_time</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="c1">#print(&#39;turn on heater&#39;)</span>
+                <span class="n">heating_brick</span><span class="o">.</span><span class="n">set_monoflop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">monoflop_time</span><span class="p">)</span>
+                <span class="n">cooling_brick</span><span class="o">.</span><span class="n">set_monoflop</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">monoflop_time</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">monoflop_time</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="o">*-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">monoflop_time</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="c1">#print(&#39;turn on heater&#39;)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb_tempering</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="c1"># heating_brick.set_monoflop(0, False, 500)</span>
+                <span class="c1"># heating_brick.set_monoflop(1, False, 500)</span>
+                <span class="c1"># cooling_brick.set_monoflop(0, False, 500)</span>
+                <span class="c1"># cooling_brick.set_monoflop(1, False, 500)</span>
+            <span class="k">elif</span> <span class="n">monoflop_time</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="o">*-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1">#print(&#39;turn on cooler&#39;)</span>
+                <span class="n">heating_brick</span><span class="o">.</span><span class="n">set_monoflop</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">monoflop_time</span><span class="o">*-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">cooling_brick</span><span class="o">.</span><span class="n">set_monoflop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">monoflop_time</span><span class="o">*-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Tempering.initialize_tab"><a class="viewcode-back" href="../modules.html#modules.Tempering.initialize_tab">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">General_functions</span><span class="o">.</span><span class="n">initialize_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,[</span><span class="s2">&quot;+-SetTemp&quot;</span><span class="p">,</span><span class="s2">&quot;--SetTemp&quot;</span><span class="p">,</span><span class="s2">&quot;PID_on&quot;</span><span class="p">,</span><span class="s2">&quot;PID_off&quot;</span><span class="p">],</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gui</span><span class="p">[</span><span class="s2">&quot;tab_number&quot;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Tempering.draw_tab"><a class="viewcode-back" href="../modules.html#modules.Tempering.draw_tab">[docs]</a>    <span class="k">def</span> <span class="nf">draw_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draws GUI tab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lcd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tk_attributes</span><span class="p">[</span><span class="s2">&quot;lcd&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lcd</span><span class="o">.</span><span class="n">get_gui_tab_selected</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Tab&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span><span class="c1"># todo find tab number from dict value</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">clear_display</span><span class="p">()</span>
+
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span><span class="s1">&#39;AmbTemp:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;ambTemp&quot;</span><span class="p">])</span><span class="o">+</span> <span class="s1">&#39; </span><span class="se">\xF8</span><span class="s1">C&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span><span class="s1">&#39;SetTemp:&#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.1f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;Offset&quot;</span><span class="p">])</span><span class="o">+</span> <span class="s1">&#39; </span><span class="se">\xF8</span><span class="s1">C&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span><span class="s1">&#39;ChambTemp:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_irrad&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; </span><span class="se">\xF8</span><span class="s1">C&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span><span class="s1">&#39;RctTemp:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_reactor&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; </span><span class="se">\xF8</span><span class="s1">C&#39;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">draw_text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">FONT_6X8</span><span class="p">,</span> <span class="n">lcd</span><span class="o">.</span><span class="n">COLOR_BLACK</span><span class="p">,</span><span class="s1">&#39;PID_on:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]))</span>
+
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-SetTemp&quot;</span><span class="p">],</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--SetTemp&quot;</span><span class="p">],</span> <span class="mi">115</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_on&quot;</span><span class="p">],</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">)</span>
+            <span class="n">lcd</span><span class="o">.</span><span class="n">set_gui_button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_off&quot;</span><span class="p">],</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;off&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Tempering.button_handling"><a class="viewcode-back" href="../modules.html#modules.Tempering.button_handling">[docs]</a>    <span class="k">def</span> <span class="nf">button_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns functions to GUI buttons.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        button : boolean</span>
+<span class="sd">            State of the pressed button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;+-SetTemp&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.1</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;--SetTemp&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.1</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_on&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">button</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_off&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="o">.</span><span class="n">setpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_tab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb_tempering</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs desired- , irradiation chamber- , reactor- and ambient temperature together with the PID state in a log list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with header and logged desired- , irradiation chamber- , reactor- and ambient temperature together with the PID state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Desired Temp./°C&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Ambient Temp./°C&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Irrad. Chamber Temp./°C&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Reactor Temp./°C&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;PID On&quot;</span><span class="p">]</span>
+        <span class="n">log_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;SetTemp&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;ambTemp&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_irrad&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;temperature_reactor&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;PID_tune&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Daniel Kowalczyk, Dirk Ziegenbalg.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+   
+  <div id="other-versions-div" class="rst-versions" data-toggle="rst-versions" role="note" aria-label="Versions" style="visibility: hidden">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Other Versions</span>
+      1.0.0
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      <dl id="other-versions-dl"/>
+    </div>
+  </div>
+  <script>
+    function addVersion(name) {
+      var dd = document.createElement("dd");
+      var a = document.createElement("a");
+      a.href = "../../" + name;
+      a.innerText = name;
+      dd.appendChild(a);
+      document.getElementById('other-versions-dl').appendChild(dd);
+    }
+    // Get versions.txt and add a version for each line
+    fetch("../../versions.txt").then(response => {
+      if (response.ok) {
+        document.getElementById('other-versions-div').style.visibility = "visible";
+        return response.text().then(text => text.split(/\r?\n/).forEach(addVersion))
+      }
+    });
+  </script>
+
+
+</body>
+</html>

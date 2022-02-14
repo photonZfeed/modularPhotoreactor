@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	Wago 
+EAN ‏ : ‎ 4055144049404 
+Herstellerreferenz/Manufacturer reference:	 	221-2411 
+Verkäufer/Supplier: Amazon
+size: 8.9 x 8.1 x 35.5 mm
+link: https://www.amazon.de/-/en/Connection-Conductor-2-Conductor-Actuation-Transparent/dp/B08X6CPFNR/ref=sr_1_8?crid=31DTCS5L22OII&dchild=1&keywords=mini+wago+klemmen&qid=1635494632&qsid=257-2331300-1205907&sprefix=mini+wago+klemme%2Caps%2C95&sr=8-8&sres=B0017V5WGI%2CB07CDYW1FY%2CB073VY4SKZ%2CB08X6CPFNR%2CB00JB3U9CG%2CB003G5ZB32%2CB014Y91I3K%2CB09G6VR4QN%2CB01IO3KHZM%2CB01HH1HLSI%2CB07WJHSQX2%2CB079VR3S45%2CB06X3SMS74%2CB08768VL3Z%2CB07VCTS7VD%2CB06WLLCH5Y%2CB014Y9YH0G%2CB07NKCWBST%2CB07CWCJ1FS%2CB07PKF8KD7&srpt=TERMINAL_BLOCK
