@@ -15,7 +15,7 @@ The Python modules are documented in the [Software section](./00_SOFTWARE/). See
 
 Cite this repository: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5615742.svg)](https://doi.org/10.5281/zenodo.5615742)
 
-Links to the pulblicatons will be added when available.
+A preprint of the pulblicatons can be found here: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5614883.svg)](https://doi.org/10.5281/zenodo.5614883)
 
 ## Licensing
 
