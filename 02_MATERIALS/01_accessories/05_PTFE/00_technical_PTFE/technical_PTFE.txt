@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	Steinbach AG
+Herstellerreferenz/Manufacturer reference PTFE 2 mm: OPF200.XXX.500-U	 	
+Verkäufer/Supplier: Steinbach AG
+link: https://www.steinbach-ag.de/de/dichtungen-und-stanzteile/materialien/ptfe-virginal.html#c7747
+link data sheet: https://www.steinbach-ag.de/fileadmin/user_upload/_temp_/PTFE.pdf

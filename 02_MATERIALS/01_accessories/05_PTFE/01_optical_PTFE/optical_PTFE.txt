@@ -1,0 +1,5 @@
+Hersteller/Manufacturer: 	Berghof Fluoroplastics
+Herstellerreferenz/Manufacturer reference PTFE 2 mm: OPF200.XXX.500-U	 	
+Verkäufer/Supplier: Berghof Fluoroplastics
+link: https://www.berghof-fluoroplastics.com/produkte/optopolymerr-optische-materialloesungen/folien
+link data sheet: https://www.berghof-fluoroplastics.com/fileadmin/redaktion-bft/Downloads/03_Optisches_PTFE_-_Optopolymer_R_/BFT_Optopolymer_DE_2_.pdf

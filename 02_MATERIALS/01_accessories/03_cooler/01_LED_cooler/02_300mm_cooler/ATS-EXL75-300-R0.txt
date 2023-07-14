@@ -1,0 +1,6 @@
+Hersteller/Manufacturer: 	Advanced Thermal Solutions  
+Herstellerreferenz/Manufacturer reference:	 	ATS-EXL75-300-R0
+size: 50mm
+Verkäufer/Supplier: Mouser Electronics
+link: https://www.mouser.de/ProductDetail/Advanced-Thermal-Solutions/ATS-EXL75-300-R0?qs=qSfuJ%252Bfl%2Fd7NSQusbF2dLQ%3D%3D
+link data sheet: https://www.mouser.de/datasheet/2/596/Advanced_Thermal_Solutions_Extrusions-1879636.pdf
