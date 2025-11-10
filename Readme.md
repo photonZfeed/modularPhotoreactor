@@ -311,6 +311,6 @@ The Python modules for the operation of the reactor controller are documented in
 
 *2022 [Making Photocatalysis Comparable Using a Modular and Characterized Open-Source Photoreactor](https://chemistry-europe.onlinelibrary.wiley.com/doi/full/10.1002/cptc.202200044)
 
-*2023 [Making Photocatalysts Screenable - A Milli Scale Multi-Batch Screening Photoreactor as Extension for the Modular Photoreactor]([https://fill_in_the_blank](https://pubs.rsc.org/en/content/articlelanding/2023/re/d3re00398a))
+*2023 [Making Photocatalysts Screenable - A Milli Scale Multi-Batch Screening Photoreactor as Extension for the Modular Photoreactor](https://pubs.rsc.org/en/content/articlelanding/2023/re/d3re00398a)
 
-*2025 [Less photons, more hydrogen: dynamic irradiation boosts the light-driven hydrogen evolution by thiomolybdate catalysts](chemrxiv.org/engage/chemrxiv/article-details/69049c2b113cc7cfff4897d2)
+*2025 [Less photons, more hydrogen: dynamic irradiation boosts the light-driven hydrogen evolution by thiomolybdate catalysts](https://chemrxiv.org/engage/chemrxiv/article-details/69049c2b113cc7cfff4897d2)
