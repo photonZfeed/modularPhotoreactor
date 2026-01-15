@@ -140,27 +140,57 @@ The Python modules for the operation of the reactor controller are documented in
 ┃  ┃     ┣ 📜 case_pressure_extension.stl
 ┃  ┃     ┗ 📜 case_pressure_extension_updated.stl
 ┃  ┣ 📂 03_Multi_Batch_Screening_Photoreactor
-┃  ┃  ┣ 📂 00_Base_Module
-┃  ┃  ┃  ┗ 📜 Base_Module.stl
-┃  ┃  ┣ 📂 01_Irradiation_Module
-┃  ┃  ┃  ┣ 📜 300mm_alu_heatsink.stl
-┃  ┃  ┃  ┣ 📜 heatsink_holder_left.stl
-┃  ┃  ┃  ┣ 📜 heatsink_holder_right.stl
-┃  ┃  ┃  ┗ 📜 stand_irradiation_module.stl
-┃  ┃  ┣ 📂 02_Reflector_Module
-┃  ┃  ┃  ┣ 📜 PTFE_Side_Wall.stl
-┃  ┃  ┃  ┣ 📜 Reflector_Holder_Nut.stl
-┃  ┃  ┃  ┗ 📜 Reflector_Holder_Screw.stl
-┃  ┃  ┣ 📂 03_Mobile_Cover
-┃  ┃  ┃  ┣ 📜 back.stl
-┃  ┃  ┃  ┣ 📜 connector.stl
-┃  ┃  ┃  ┣ 📜 front.stl
-┃  ┃  ┃  ┣ 📜 sides.stl
-┃  ┃  ┃  ┗ 📜 top.stl
-┃  ┃  ┗ 📂 04_Accesories
-┃  ┃     ┗ 📂 00_UV_Vis_Cell_4mL_GC_Vial
-┃  ┃        ┣ 📜 UV_vis_cell_4mL_GC_vial_SLA.png
-┃  ┃        ┗ 📜 UV_vis_cell_4mL_GC_vial_SLA.stl
+┃  ┃  ┣ 📂 00_Indirect_Irradiation_Module
+┃  ┃  ┃  ┣ 📂 00_Base_Module
+┃  ┃  ┃  ┃  ┗ 📜 Base_Module.stl
+┃  ┃  ┃  ┣ 📂 01_Irradiation_Module
+┃  ┃  ┃  ┃  ┣ 📜 300mm_alu_heatsink.stl
+┃  ┃  ┃  ┃  ┣ 📜 heatsink_holder_left.stl
+┃  ┃  ┃  ┃  ┣ 📜 heatsink_holder_right.stl
+┃  ┃  ┃  ┃  ┗ 📜 stand_irradiation_module.stl
+┃  ┃  ┃  ┣ 📂 02_Reflector_Module
+┃  ┃  ┃  ┃  ┣ 📜 PTFE_Side_Wall.stl
+┃  ┃  ┃  ┃  ┣ 📜 Reflector_Holder_Nut.stl
+┃  ┃  ┃  ┃  ┗ 📜 Reflector_Holder_Screw.stl
+┃  ┃  ┃  ┣ 📂 03_Mobile_Cover
+┃  ┃  ┃  ┃  ┣ 📜 back.stl
+┃  ┃  ┃  ┃  ┣ 📜 connector.stl
+┃  ┃  ┃  ┃  ┣ 📜 front.stl
+┃  ┃  ┃  ┃  ┣ 📜 sides.stl
+┃  ┃  ┃  ┃  ┗ 📜 top.stl
+┃  ┃  ┃  ┗ 📂 04_Accesories
+┃  ┃  ┃     ┗ 📂 00_UV_Vis_Cell_4mL_GC_Vial
+┃  ┃  ┃        ┣ 📜 UV_vis_cell_4mL_GC_vial_SLA.png
+┃  ┃  ┃        ┗ 📜 UV_vis_cell_4mL_GC_vial_SLA.stl
+┃  ┃  ┗ 📂 01_Direct_Irradiation_Module
+┃  ┃     ┣ 📂 00_reflector_fixed_height
+┃  ┃     ┃  ┣ 📜 corner_pillar_1.stl
+┃  ┃     ┃  ┣ 📜 corner_pillar_2.stl
+┃  ┃     ┃  ┣ 📜 corner_pillar_3.stl
+┃  ┃     ┃  ┣ 📜 corner_pillar_4.stl
+┃  ┃     ┃  ┣ 📜 corner_pillar_connector_330mm.stl
+┃  ┃     ┃  ┣ 📜 corner_pillar_connector_350mm.stl
+┃  ┃     ┃  ┣ 📜 corner_pillar_support.stl
+┃  ┃     ┃  ┣ 📜 heatsink_holder_female.stl
+┃  ┃     ┃  ┣ 📜 heatsink_holder_male.stl
+┃  ┃     ┃  ┣ 📜 holder_feet.stl
+┃  ┃     ┃  ┣ 📜 holder_feet_assembly.stl
+┃  ┃     ┃  ┣ 📜 holder_feet_support.stl
+┃  ┃     ┃  ┣ 📜 reflector_fixed_height_assembly.stl
+┃  ┃     ┃  ┗ 📜 reflector_holder.stl
+┃  ┃     ┣ 📂 01_modular_reflector_adjustable_height
+┃  ┃     ┃  ┣ 📜 corner_reflector_holder_1a.stl
+┃  ┃     ┃  ┣ 📜 corner_reflector_holder_1b.stl
+┃  ┃     ┃  ┣ 📜 modular_reflector_assembly.stl
+┃  ┃     ┃  ┣ 📜 reflector_holder_330mm_1cm.stl
+┃  ┃     ┃  ┣ 📜 reflector_holder_330mm_2cm.stl
+┃  ┃     ┃  ┣ 📜 reflector_holder_330mm_6cm.stl
+┃  ┃     ┃  ┣ 📜 reflector_holder_350mm_1cm.stl
+┃  ┃     ┃  ┣ 📜 reflector_holder_350mm_2cm.stl
+┃  ┃     ┃  ┗ 📜 reflector_holder_350mm_6cm.stl
+┃  ┃     ┗ 📂 02_heatsink_and _LED_mounting_plate
+┃  ┃        ┣ 📜 heatsink_200x200.stl
+┃  ┃        ┗ 📜 LED_mount_400x400.stl
 ┃  ┗ 📜 readme.md
 ┣ 📂 02_MATERIALS
 ┃  ┣ 📂 00_electronics
