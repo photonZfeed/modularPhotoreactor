@@ -477,4 +477,125 @@ The Python modules for the operation of the reactor controller are documented in
   *Photocatalytic Hydrogels with Covalent Catalyst Crosslinks: Introducing the Dyedrogel Concept*  
   ChemRxiv (2026)
   https://chemrxiv.org/engage/chemrxiv/article-details/69552aa4083c11e4a1fc2ee6
+  
+### Related Publications
 
+* **2022**  
+  Buday et al.  
+  *Activating a [FeFe] Hydrogenase Mimic for Hydrogen Evolution under Visible Light*  
+  Angewandte Chemie International Edition (2022).  
+  https://doi.org/10.1002/anie.202202079
+
+* **2023**  
+  Knorr et al.  
+  *Unlocking the potential of ketocoumarins: efficient photosensitizers for sustainable light-driven hydrogen evolution*  
+  Journal of Materials Chemistry A (2023).  
+  https://doi.org/10.1039/D3TA04450E
+
+* **2023**  
+  Çeper et al.  
+  *Visible-Light-Driven Hydrogen Evolution of PtNP/[Ru(bpy)3]2+/Polyampholyte Hybrid Hydrogels*  
+  ACS Applied Polymer Materials (2023).  
+  https://doi.org/10.1021/acsapm.3c01051
+
+* **2023**  
+  Abbas et al.  
+  *Initial Quenching Efficiency Determines Light-Driven H2 Evolution of [Mo3S13]2− in Lipid Bilayers*  
+  Chemistry – A European Journal (2023).  
+  https://doi.org/10.1002/chem.202302284
+
+* **2024**  
+  Çeper et al.  
+  *Noble Metal-Free Light-Driven Hydrogen Evolution Catalysis in Polyampholytic Hydrogel Networks*  
+  ACS Applied Materials & Interfaces (2024).  
+  https://doi.org/10.1021/acsami.4c04045
+
+* **2024**  
+  Kasahara et al.  
+  *Molecular Dyad vs Multi-Component Approach – Photocatalytic Hydrogen Evolution by Combining Oligothiophene Photosensitizers with [FeFe]-Hydrogenase Mimics*  
+  ChemCatChem (2024).  
+  https://doi.org/10.1002/cctc.202400247
+
+* **2025**  
+  Kasahara et al.  
+  *[FeFe]-Hydrogenase Mimic with Organic Photosensitizers for Long-Lived Excited States and Efficient Photocatalytic H2 Production*  
+  Cell Reports Physical Science (2025).  
+  https://doi.org/10.1016/j.xcrp.2025.102975
+
+* **2025**  
+  Basma et al.  
+  *Engineered [FeFe]-Hydrogenase Mimics Featuring Heteroaryl Linkers: Molecular Design and Photocatalytic Hydrogen Evolution under Visible Light*  
+  Inorganic Chemistry Frontiers (2025).  
+  https://doi.org/10.1039/D5QI01191D
+
+* **2025**  
+  Abbas et al.  
+  *Selective Light-Driven CO2 to CO Reduction by a [FeFe]-Hydrogenase Mimic in Water*  
+  ChemCatChem (2025).  
+  https://doi.org/10.1002/cctc.202401947
+
+* **2025**  
+  Mandal et al.  
+  *Mn2+ and [Ru(bpy)3]2+ in UiO-67 Metal-Organic Frameworks Enhance Photocatalytic Oxidation of Benzylamine via an Electron Transfer Pathway*  
+  RSC Advances (2025).  
+  https://doi.org/10.1039/D5RA04503G
+
+* **2025**  
+  Mandal et al.  
+  *Enhanced and Durable Light-Driven Hydrogen Evolution by Cobalt-Based Prussian Blue Analogs in Phospholipid Bilayers*  
+  Advanced Energy and Sustainability Research (2025).  
+  https://doi.org/10.1002/aesr.202400372
+
+* **2025**  
+  Mandal et al.  
+  *The Zr8O6 Secondary Building Unit and Porphyrin Linker Catalyze Light-Driven H2 Evolution in Porphyrin-Based Metal-Organic Frameworks*  
+  ChemSusChem (2025).  
+  https://doi.org/10.1002/cssc.202500372
+
+* **2026**  
+  Kolbinger et al.  
+  *{Mo2} can do it too: dynamic irradiation increases photonic efficiency of light-driven hydrogen evolution by [Mo2S12]2−*  
+  Sustainable Energy & Fuels (2026).  
+  https://doi.org/10.1039/D6SE00078A
+
+* **2026**  
+  Kolbinger et al.  
+  *Fewer photons, more hydrogen: effects of dynamic irradiation on light-driven hydrogen evolution by thiomolybdate catalysts*  
+  Sustainable Energy & Fuels (2026).  
+  https://doi.org/10.1039/D5SE01490E
+
+* **2026**  
+  Brezhneva et al.  
+  *Insights Into Overall Photocatalytic Water Splitting Through Simultaneous In Situ H2 and O2 Measurements*  
+  ChemSusChem (2026).  
+  https://doi.org/10.1002/cssc.202502721
+
+* **2026**  
+  Tombrink et al.  
+  *4CzIPN Photosensitizes the Cobaloxime-Catalyzed Light-Driven Hydrogen Evolution Reaction*  
+  ChemSusChem (2026).  
+  https://doi.org/10.1002/cssc.70942
+
+* **2026**  
+  Baumgarten et al.  
+  *Phenothiazine redox mediators boost photocatalytic hydrogen evolution*  
+  EES Catalysis (2026).  
+  https://doi.org/10.1039/D6EY00029K
+
+* **2026**  
+  Utievskyi et al.  
+  *Embedding a Dinuclear Ru–Pt Photocatalyst Into Polyampholytic Graft Copolymer Matrix Enables Prolonged Hydrogen Evolution While Allowing Catalyst Repair*  
+  Chemistry – A European Journal (2026).  
+  https://doi.org/10.1002/chem.71568
+
+* **2026**  
+  Schleicher et al.  
+  *Light-driven hydrogen evolution reactivity of molecular thio-oxomolybdate catalysts*  
+  Sustainable Energy & Fuels (2026).  
+  https://doi.org/10.1039/D6SE00061D
+
+* **2026**  
+  Tran et al.  
+  *Soft-Matter Confinement Modulates Excited-State Dynamics of Ru Photocatalysts for Hydrogen Evolution in Aqueous Media*  
+  ACS Materials Au (2026).  
+  https://doi.org/10.1021/acsmaterialsau.5c00212
