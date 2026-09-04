@@ -353,13 +353,6 @@ The Python modules for the operation of the reactor controller are documented in
   Reaction Chemistry & Engineering (2023).  
   https://doi.org/10.1039/D3RE00398A
 
-
-* **2025**  
-  Wiedemann et al.  
-  *Making Photocatalyst Screening Photoefficient – Combining Radiation Field Models to Design a Direct Irradiation Module for the Multi-Batch Screening Reactor*  
-  To be submitted (2025).  
-  https://doi.org/10.5281/zenodo.17867874
-
 ### Related Preprints
 
 * **2025**  
@@ -368,6 +361,11 @@ The Python modules for the operation of the reactor controller are documented in
   To be submitted (2025).  
   https://doi.org/10.5281/zenodo.17867915
 
+* **2025**  
+  Wiedemann et al.  
+  *Making Photocatalyst Screening Photoefficient – Combining Radiation Field Models to Design a Direct Irradiation Module for the Multi-Batch Screening Reactor*  
+  To be submitted (2025).  
+  https://doi.org/10.5281/zenodo.17867874
   
 ### Related Journal Articles
 
