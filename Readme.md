@@ -354,131 +354,22 @@ The Python modules for the operation of the reactor controller are documented in
   https://doi.org/10.1039/D3RE00398A
 
 
-<!-- * **2025**  
+* **2025**  
   Wiedemann et al.  
   *Making Photocatalyst Screening Photoefficient – Combining Radiation Field Models to Design a Direct Irradiation Module for the Multi-Batch Screening Reactor*  
   To be submitted (2025).  
-  https://doi.org/10.5281/zenodo.17867874 -->
+  https://doi.org/10.5281/zenodo.17867874
 
-### Related Publications
-
-* **2022**  
-  Buday et al.  
-  *Activating a [FeFe] Hydrogenase Mimic for Hydrogen Evolution under Visible Light*  
-  Angew. Chem. Int. Ed., 61 (2022).  
-  https://doi.org/10.1002/anie.202202079
-
-* **2023**  
-  Knorr et al.  
-  *Unlocking the potential of ketocoumarins: efficient photosensitizers for sustainable light driven hydrogen evolution*  
-  J. Mater. Chem. A, 11 (2023).  
-  http://dx.doi.org/10.1039/D3TA04450E
-
-* **2023**  
-  Čeper et al.  
-  *Visible-Light-Driven Hydrogen Evolution of PtNP/[Ru(bpy)3]2+/Polyampholyte Hybrid Hydrogels*  
-  ACS Appl. Polymer Mater., 5 (2023).  
-  https://doi.org/10.1021/acsapm.3c01051
-
-* **2023**  
-  Abbas et al.  
-  *Initial Quenching Efficiency Determines Light-Driven H2 Evolution of [Mo3S13]2− in Lipid Bilayers*  
-  Chemistry – A European Journal, 29 (2023).  
-  https://doi.org/10.1002/chem.202302284
-
-* **2024**  
-  Čeper et al.  
-  *Noble Metal-Free Light-Driven Hydrogen Evolution Catalysis in Polyampholytic Hydrogel Networks*  
-  ACS Appl. Mater. Interfaces, 16 (2024).  
-  https://doi.org/10.1021/acsami.4c04045
-
-* **2024**  
-  Kasahara et al.  
-  *Molecular Dyad vs Multi-Component Approach – Photocatalytic Hydrogen Evolution by Combining Oligothiophene Photosensitizers with [FeFe]-Hydrogenase Mimics*  
-  ChemCatChem, 16 (2024).  
-  https://doi.org/10.1002/cctc.202400247
+### Related Preprints
 
 * **2025**  
-  Kolbinger et al.  
-  *Less photons, more hydrogen: dynamic irradiation boosts the light-driven hydrogen evolution by thiomolybdate catalysts*  
-  ChemRxiv (2025).  
-  https://chemrxiv.org/engage/chemrxiv/article-details/69049c2b113cc7cfff4897d2
-
-* **2025**  
-  Kolbinger et al.  
-  *Mo2 can do it too — dynamic irradiation leads to more efficient light-driven hydrogen evolution*  
-  ChemRxiv (2025).  
-  https://chemrxiv.org/engage/chemrxiv/article-details/6945461f6e8e74030e726de9
-
-
-  <!-- * **2025**  
   Koba et al.  
   *Improving Efficiency of Light-Driven Water Oxidation Catalysis through Dynamic Irradiation*  
   To be submitted (2025).  
-  https://doi.org/10.5281/zenodo.17867915 -->
+  https://doi.org/10.5281/zenodo.17867915
 
-
-* **2025**  
-  Kasahara et al.  
-  *[FeFe]-hydrogenase mimic with organic photosensitizers for long-lived excited states and efficient photocatalytic H2 production*  
-  Cell Reports Physical Science, 6 (2025).  
-  https://doi.org/10.1016/j.xcrp.2025.102975
-
-* **2025**  
-  Basma et al.  
-  *Engineered [FeFe]-hydrogenase mimics featuring heteroaryl linkers: molecular design and photocatalytic hydrogen evolution under visible light*  
-  Inorg. Chem. Front., 12 (2025).  
-  http://dx.doi.org/10.1039/D5QI01191D
-
-* **2025**  
-  Abbas et al.  
-  *Selective Light-Driven CO2 to CO Reduction by a [FeFe]-Hydrogenase Mimic in Water*  
-  ChemCatChem, 17 (2025).  
-  https://doi.org/10.1002/cctc.202401947
-
-* **2025**  
-  Baumgarten et al.  
-  *Phenothiazine redox mediators boost photocatalytic hydrogen evolution*  
-  ChemRxiv (2025).  
-  https://chemrxiv.org/engage/chemrxiv/article-details/69413c00afb3b111186487c4
-
-* **2025**  
-  Mandal et al.  
-  *Mn2+ and [Ru(bpy)3]2+ in UiO-67 metal organic frameworks enhance photocatalytic oxidation of benzylamine via an electron transfer pathway*  
-  RSC Adv., 15 (2025).  
-  http://dx.doi.org/10.1039/D5RA04503G
-
-* **2025**  
-  Mandal et al.  
-  *Enhanced and Durable Light-Driven Hydrogen Evolution by Cobalt-Based Prussian Blue Analogs in Phospholipid Bilayers*  
-  Adv. Energy Sustainability Res., 6 (2025).  
-  https://doi.org/10.1002/aesr.202400372
-
-* **2025**  
-  Mandal et al.  
-  *The Zr8O6 Secondary Building Unit and Porphyrin Linker Catalyze Light-Driven H2 Evolution in Porphyrin-Based Metal Organic Frameworks*  
-  ChemSusChem, 18 (2025).  
-  https://doi.org/10.1002/cssc.202500372
-
-* **2025**  
-  Brezhneva et al.  
-  *Insights into overall photocatalytic water splitting through simultaneous in situ H2 and O2 measurements*  
-  Submitted (2025).
-  https://chemrxiv.org/engage/chemrxiv/article-details/6932bb80ef936fb4a23bff4a  
-
-* **2026**  
-  Tombrink et al.  
-  *4CzIPN photosensitizes the cobaloxime-catalyzed light-driven hydrogen evolution reaction*  
-  ChemRxiv (2026).
-  https://chemrxiv.org/engage/chemrxiv/article-details/696119b05c91413e6e015f77
-
-* **2026**  
-  Hotzel et al.  
-  *Photocatalytic Hydrogels with Covalent Catalyst Crosslinks: Introducing the Dyedrogel Concept*  
-  ChemRxiv (2026)
-  https://chemrxiv.org/engage/chemrxiv/article-details/69552aa4083c11e4a1fc2ee6
   
-### Related Publications
+### Related Journal Articles
 
 * **2022**  
   Buday et al.  
