@@ -482,9 +482,3 @@ The Python modules for the operation of the reactor controller are documented in
   *Light-driven hydrogen evolution reactivity of molecular thio-oxomolybdate catalysts*  
   Sustainable Energy & Fuels (2026).  
   https://doi.org/10.1039/D6SE00061D
-
-* **2026**  
-  Tran et al.  
-  *Soft-Matter Confinement Modulates Excited-State Dynamics of Ru Photocatalysts for Hydrogen Evolution in Aqueous Media*  
-  ACS Materials Au (2026).  
-  https://doi.org/10.1021/acsmaterialsau.5c00212
